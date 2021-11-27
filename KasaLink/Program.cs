@@ -73,11 +73,14 @@ namespace KasaLink
                     stream.Write(encrypted, 0, encrypted.Length);
 
                     var lenBuffer = new byte[4];
-                    int bytesRead = stream.Read(lenBuffer, 0, lenBuffer.Length);
+                    stream.Read(lenBuffer, 0, lenBuffer.Length);
                     var len = BinaryPrimitives.ReadInt32BigEndian(lenBuffer);
 
                     var readBuffer = new byte[len];
-                    bytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
+
+                    var bytesRead = 0;
+                    while (bytesRead < len)
+                        bytesRead += stream.Read(readBuffer, bytesRead, len - bytesRead);
 
                     result = Decrypt(readBuffer);
                 }
